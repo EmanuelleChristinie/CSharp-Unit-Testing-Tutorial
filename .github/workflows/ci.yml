@@ -1,0 +1,42 @@
+name: CI - Build e Testes (.NET 9)
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v4
+
+    - name: Configurar .NET 9
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restaurar Dependências
+      run: dotnet restore src/UnitTestingTutorial.slnx
+
+    - name: Build do Projeto
+      run: dotnet build src/UnitTestingTutorial.slnx --no-restore --configuration Release
+
+    - name: Executar Testes Unitários com Cobertura
+      run: dotnet test src/UnitTestingTutorial.slnx --no-build --configuration Release --collect:"XPlat Code Coverage"
+
+    - name: Mover e Renomear Arquivo de Cobertura
+      if: success()
+      run: |
+        mkdir -p coverage
+        find src/ -name "coverage.cobertura.xml" -exec cp {} coverage/coverage.cobertura.xml \;
+
+    - name: Upload do Artefato de Cobertura
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cobertura-cobertura-xml
+        path: coverage/coverage.cobertura.xml
