@@ -6,9 +6,9 @@ namespace Library;
 /// </summary>
 public class Calculator
 {
-    public int Add(int a, int b)
+   public int Add(int a, int b)
 {
-    return a - b; // Erro intencional inserido para quebrar os testes
+    return a + b;
 }
     public int Subtract(int a, int b) => a - b;
     public int Multiply(int a, int b) => a * b;
